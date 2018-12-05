@@ -1,0 +1,3 @@
+D:/Documentos/Universitat/Compus/Practica1/Fase2/MitjanesV2/cmake-build-debug/CMakeFiles/MitjanesV2.dir
+D:/Documentos/Universitat/Compus/Practica1/Fase2/MitjanesV2/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/Documentos/Universitat/Compus/Practica1/Fase2/MitjanesV2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
