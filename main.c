@@ -4,6 +4,7 @@
 #define ADDRESS (MAX_DIM - 4)
 #define MAX_NUM 100
 #define MAX_DEN 10
+#define RANG_NUM_MAX 991
 
 unsigned int realitzaMitjana(int numerador, int denominador){
     int mitjana = 0;
@@ -11,15 +12,13 @@ unsigned int realitzaMitjana(int numerador, int denominador){
     if(denominador > 0)
         mitjana = numerador / denominador;
 
+    if(mitjana >= MAX_NUM){
+        mitjana = 0;
+    }   //if
+
+    printf("Num: %d - Den: %d - Mitjana: %d\n", numerador, denominador, mitjana);
+
     return (unsigned int) mitjana;
-}
-
-void inicialitzacioElements(unsigned int *elements){
-    int i;
-
-    for(i = 0; i < MAX_DIM; i++){
-        elements[i] = 0;
-    }   //for
 }
 
 unsigned int calculChecksum(const unsigned int *elements) {
@@ -37,20 +36,21 @@ unsigned int calculChecksum(const unsigned int *elements) {
 }
 
 unsigned int binToBCD(unsigned int num){
-    unsigned int res;
-    unsigned int aux;
-    aux = num;
-    aux = aux / 10;
-    res = aux << 4;
 
-    res = res | (num - aux);
+    unsigned int bcdResult = 0;
+    unsigned int shift = 0;
+    while (num > 0) {
+        bcdResult |= (num % 10) << (shift++ << 2);
+        num /= 10;
+    }
 
-    return res;
+    return bcdResult;
 }
 
 int main() {
+
      FILE *fp;
-     unsigned int address;
+     unsigned int address, rang_num = 99;
      unsigned int elements[MAX_DIM];
      int i, j, cont;
 
@@ -62,40 +62,41 @@ int main() {
     }   //if
 
     else {
-        inicialitzacioElements(elements);
 
         address = 0;
-        elements[0] = 16;
+        elements[0] = 8;
         elements[1] = address / 256;
         elements[2] = address - ((address / 256) * 256);
         elements[3] = 0;
         cont = 4;
 
-        for(i = 0; i < MAX_DEN - 1; i++) {
-            for (j = 0; j < MAX_NUM - 1; j++) {
+        for(i = 0; i <= MAX_DEN; i++) {
+                for (j = 0; j <= RANG_NUM_MAX; j++) {
 
-                if(cont == MAX_DIM){
-                    int k;
-                    fprintf(fp, ":%02X", elements[0]);
-                    for(k = 1; k < MAX_DIM; k++){
-                        fprintf(fp, "%02X", elements[k]);
-                    }   //for
+                    if (cont == MAX_DIM) {
+                        int k;
+                        fprintf(fp, ":%02X", elements[0]);
 
-                    printf("%X\n", address);
-                    fprintf(fp, "%02X\n", calculChecksum(elements));
-                    address += ADDRESS;
+                        for (k = 1; k < MAX_DIM; k++) {
+                            fprintf(fp, "%02X", elements[k]);
+                        }   //for
 
-                    inicialitzacioElements(elements);
-                    elements[0] = 16;
-                    elements[1] = address / 256;
-                    elements[2] = address - ((address / 256) * 256);
-                    elements[3] = 0;
-                    cont = 4;
-                }   //fi
+                        fprintf(fp, "%02X\n", calculChecksum(elements));
+                        address += ADDRESS;
 
-                elements[cont] = binToBCD(realitzaMitjana(j, i));
-                cont++;
-            }   //for
+                        printf("Address: %d\n", address);
+                        elements[0] = 8;
+                        elements[1] = address / 256;
+                        elements[2] = address - ((address / 256) * 256);
+                        elements[3] = 0;
+                        cont = 4;
+                    }   //if
+
+                    elements[cont] = binToBCD(realitzaMitjana(j, i));
+                    cont++;
+                }   //for
+
+                address = (unsigned int) ((1024 * (i + 1)) - 8);
         }   //for
 
 
